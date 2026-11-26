@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% from 'forms.html' import form_fields with context %}
+{% block title %}Returns{% endblock %}
+{% block body %}
+<header class="page-head"><div><h1>Returns</h1><p>Find a sale, select items and record a cash refund.</p></div>
+{% if draft %}<form method="post">{{ form_fields('cancel', draft) }}<button class="secondary">Cancel return</button></form>{% endif %}
+</header>
+{% if not draft %}
+<section class="card start"><h2>Find original sale</h2><form method="post" class="inline-form compact">{{ form_fields('new') }}<label>Sale number<input type="number" name="sale_id" min="1" placeholder="e.g. 1" required autofocus></label><button>Find sale</button></form><a href="{{ url_for('history') }}">Browse transaction history</a></section>
+{% else %}
+<div class="split">
+  <div class="stack">
+    <section class="card">
+      <h2>Add return item</h2>
+      <form method="post" class="inline-form">{{ form_fields('add', draft) }}
+        <label>Product code<input name="sku" maxlength="24" placeholder="e.g. 1001" autocomplete="off" required autofocus></label>
+        <label>Quantity<input name="qty" type="number" min="1" max="10000" value="1" required></label><button>Add item</button>
+      </form>
+    </section>
+    <section class="card table-card">
+      <div class="card-title"><h2>Original sale #{{ draft.sale_id }}</h2><a href="{{ url_for('receipt', kind='sale', number=draft.sale_id) }}">View receipt</a></div>
+      <div class="overflow"><table><thead><tr><th>Product</th><th>Bought</th><th>Returnable</th><th>Selected</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody>
+      {% for sku, line in source.items() %}
+      <tr><td><strong>{{ line.name }}</strong><small>{{ sku }}</small></td><td>{{ line.qty }}</td><td>{{ line.qty - used.get(sku, 0) }}</td><td>{{ draft.items.get(sku, 0) }}</td>
+      <td>{% if sku in draft.items %}<form method="post">{{ form_fields('remove', draft) }}<input type="hidden" name="sku" value="{{ sku }}"><button class="text-button" aria-label="Remove {{ line.name }}">Remove</button></form>{% endif %}</td></tr>
+      {% endfor %}</tbody></table></div>
+    </section>
+  </div>
+  <section class="card summary">
+    <h2>Refund summary</h2>
+    {% if quote_error %}<p class="notice error" role="alert">{{ quote_error }}</p>{% endif %}
+    <dl><div><dt>Subtotal</dt><dd>{{ refund_subtotal|money }}</dd></div><div><dt>Refunded tax</dt><dd>{{ refund_tax|money }}</dd></div><div class="total"><dt>Cash refund</dt><dd>{{ (refund_subtotal + refund_tax)|money }}</dd></div></dl>
+    <form method="post">{{ form_fields('refund', draft) }}<input type="hidden" name="expected" value="{{ refund_subtotal + refund_tax }}"><button{% if not refund_lines %} disabled{% endif %}>Confirm cash refund</button></form>
+    <p class="hint">Hand over cash after the return voucher appears.</p>
+  </section>
+</div>
+{% endif %}
+{% endblock %}

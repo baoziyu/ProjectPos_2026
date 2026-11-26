@@ -1,0 +1,16 @@
+@startuml
+!include style.puml
+!pragma layout smetana
+left to right direction
+actor Cashier as C
+rectangle "Market POS" {
+  usecase "Process Sale" as S
+  usecase "Handle Returns" as R
+  usecase "Maintain Products" as P
+  usecase "Review Transaction History" as H
+}
+C -- S
+C -- R
+C -- P
+C -- H
+@enduml

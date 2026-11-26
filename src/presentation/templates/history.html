@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}History{% endblock %}
+{% block body %}
+<header class="page-head"><div><h1>Transaction history</h1><p>Open a receipt or voucher from the latest 25 transactions of each type.</p></div></header>
+<div class="stack">
+{% for kind, title, entries in [('sale','Sales',sales),('return','Returns',returns)] %}
+<section class="card table-card">
+  <div class="card-title"><h2>{{ title }}</h2></div>
+  <div class="overflow"><table><thead><tr><th>Reference</th>{% if kind == 'return' %}<th>Original sale</th>{% endif %}<th>Recorded (UTC)</th><th>Cash {{ 'total' if kind == 'sale' else 'refund' }}</th></tr></thead><tbody>
+  {% for entry in entries %}<tr><td><a href="{{ url_for('receipt', kind=kind, number=entry.id) }}">{{ kind|capitalize }} #{{ entry.id }}</a></td>{% if kind == 'return' %}<td><a href="{{ url_for('receipt', kind='sale', number=entry.sale_id) }}">Sale #{{ entry.sale_id }}</a></td>{% endif %}<td>{{ entry.created }}</td><td>{{ entry.total|money }}</td></tr>
+  {% else %}<tr><td colspan="4">No {{ title|lower }} recorded yet.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endfor %}
+</div>
+{% endblock %}

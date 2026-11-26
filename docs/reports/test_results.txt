@@ -1,0 +1,22 @@
+test_concurrent_returns_cannot_both_claim_last_unit (test_register.RegisterTests.test_concurrent_returns_cannot_both_claim_last_unit) ... ok
+test_duplicate_sale_and_refund_requests_are_idempotent (test_register.RegisterTests.test_duplicate_sale_and_refund_requests_are_idempotent) ... ok
+test_historical_price_and_exact_partial_returns (test_register.RegisterTests.test_historical_price_and_exact_partial_returns) ... ok
+test_insufficient_cash_does_not_commit (test_register.RegisterTests.test_insufficient_cash_does_not_commit) ... ok
+test_multi_product_sale_and_repeated_scan (test_register.RegisterTests.test_multi_product_sale_and_repeated_scan) ... ok
+test_normal_refund_restores_stock (test_register.RegisterTests.test_normal_refund_restores_stock) ... ok
+test_normal_sale_and_change (test_register.RegisterTests.test_normal_sale_and_change) ... ok
+test_product_validation_and_search (test_register.RegisterTests.test_product_validation_and_search) ... ok
+test_refund_beyond_remaining_quantity (test_register.RegisterTests.test_refund_beyond_remaining_quantity) ... ok
+test_sqlite_persistence_and_integrity (test_register.RegisterTests.test_sqlite_persistence_and_integrity) ... ok
+test_stale_refund_quote_does_not_commit (test_register.RegisterTests.test_stale_refund_quote_does_not_commit) ... ok
+test_stale_sale_rolls_back_every_write (test_register.RegisterTests.test_stale_sale_rolls_back_every_write) ... ok
+test_unknown_original_sale_and_return_product (test_register.RegisterTests.test_unknown_original_sale_and_return_product) ... ok
+test_unknown_product (test_register.RegisterTests.test_unknown_product) ... ok
+test_checkout_to_refund_and_history (test_web.WebTests.test_checkout_to_refund_and_history) ... ok
+test_invalid_receipt_and_missing_csrf (test_web.WebTests.test_invalid_receipt_and_missing_csrf) ... ok
+test_product_create_edit_and_search (test_web.WebTests.test_product_create_edit_and_search) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.102s
+
+OK

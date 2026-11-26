@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% from 'forms.html' import form_fields with context %}
+{% block title %}Products{% endblock %}
+{% block body %}
+<header class="page-head"><div><h1>Products</h1><p>Find products and maintain prices and stock counts.</p></div></header>
+<div class="split">
+  <section class="card table-card">
+    <div class="card-title"><h2>Product catalog</h2></div>
+    <form method="get" class="search"><label class="sr-only" for="q">Search by code or name</label><input id="q" name="q" value="{{ query }}" placeholder="Search by code or name"><button>Search</button></form>
+    <div class="overflow"><table><thead><tr><th>Product</th><th>Price</th><th>In stock</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody>
+    {% for product in products %}
+    <tr><td><strong>{{ product.name }}</strong><small>{{ product.sku }}</small></td><td>{{ product.price_cents|money }}</td><td>{{ product.stock }}</td><td><a href="{{ url_for('products', q=query, edit=product.sku) }}">Edit</a></td></tr>
+    {% else %}<tr><td colspan="4">No products match this search.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+  <section class="card">
+    <h2>{{ 'Edit product' if selected else 'New product' }}</h2>
+    <form method="post" class="stack">{{ form_fields('update' if selected else 'create') }}
+      <label>Product code<input name="sku" maxlength="24" value="{{ selected.sku if selected else '' }}" required{% if selected %} readonly{% endif %}></label>
+      <label>Product name<input name="name" maxlength="80" value="{{ selected.name if selected else '' }}" required></label>
+      <label>Unit price<input name="price" inputmode="decimal" value="{{ '%d.%02d'|format(selected.price_cents // 100, selected.price_cents % 100) if selected else '' }}" required></label>
+      <label>Stock count<input name="stock" type="number" min="0" max="10000000" value="{{ selected.stock if selected else '' }}" required></label>
+      <button>Save product</button>{% if selected %}<a href="{{ url_for('products', q=query) }}">Cancel edit</a>{% endif %}
+    </form>
+  </section>
+</div>
+{% endblock %}

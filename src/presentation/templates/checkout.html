@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% from 'forms.html' import form_fields with context %}
+{% block title %}Checkout{% endblock %}
+{% block body %}
+<header class="page-head"><div><h1>Checkout</h1><p>Scan products and record a cash sale.</p></div>
+{% if sale %}<form method="post">{{ form_fields('cancel', sale) }}<button class="secondary">Cancel sale</button></form>{% endif %}
+</header>
+{% if not sale %}
+<section class="card start"><h2>Start a sale</h2><p>Open a basket to scan or enter a product code.</p><form method="post">{{ form_fields('new') }}<button>New sale</button></form></section>
+{% else %}
+<div class="split">
+  <div class="stack">
+    {% if not sale.ended %}
+    <section class="card">
+      <h2>Add product</h2>
+      <form method="post" class="inline-form">{{ form_fields('add', sale) }}
+        <label>Product code<input name="sku" maxlength="24" placeholder="e.g. 1001" autocomplete="off" required autofocus></label>
+        <label>Quantity<input name="qty" type="number" min="1" max="10000" value="1" required></label>
+        <button>Add item</button>
+      </form>
+    </section>
+    {% endif %}
+    <section class="card table-card">
+      <div class="card-title"><h2>Basket</h2><span class="pill">{{ sale.lines|length }} product{{ '' if sale.lines|length == 1 else 's' }}</span></div>
+      {% if sale.lines %}
+      <div class="overflow"><table><thead><tr><th>Product</th><th>Qty</th><th>Unit price</th><th>Subtotal</th>{% if not sale.ended %}<th><span class="sr-only">Actions</span></th>{% endif %}</tr></thead><tbody>
+      {% for line in sale.lines.values() %}
+      <tr><td><strong>{{ line.name }}</strong><small>{{ line.sku }}</small></td><td>{{ line.qty }}</td><td>{{ line.price_cents|money }}</td><td>{{ line.subtotal|money }}</td>
+      {% if not sale.ended %}<td><form method="post">{{ form_fields('remove', sale) }}<input type="hidden" name="sku" value="{{ line.sku }}"><button class="text-button" aria-label="Remove {{ line.name }}">Remove</button></form></td>{% endif %}</tr>
+      {% endfor %}</tbody></table></div>
+      {% else %}<p class="empty">The basket is empty.</p>{% endif %}
+    </section>
+  </div>
+  <section class="card summary">
+    <h2>{{ 'Cash payment' if sale.ended else 'Sale summary' }}</h2>
+    <dl><div><dt>Subtotal</dt><dd>{{ sale.subtotal|money }}</dd></div><div><dt>Sales tax (8%)</dt><dd>{{ sale.tax|money }}</dd></div><div class="total"><dt>Total</dt><dd>{{ sale.total|money }}</dd></div></dl>
+    {% if sale.ended %}
+    <form method="post" class="stack">{{ form_fields('pay', sale) }}<label>Cash tendered<input name="tender" inputmode="decimal" placeholder="0.00" required autofocus></label><button>Record payment</button></form>
+    <form method="post">{{ form_fields('reopen', sale) }}<button class="secondary">Reopen basket</button></form>
+    {% else %}
+    <form method="post">{{ form_fields('end', sale) }}<button{% if not sale.lines %} disabled{% endif %}>End sale</button></form>
+    {% endif %}
+  </section>
+</div>
+{% endif %}
+{% endblock %}

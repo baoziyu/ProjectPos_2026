@@ -1,0 +1,21 @@
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 15
+skinparam defaultFontColor #17332B
+skinparam ArrowColor #356456
+skinparam ActorBorderColor #245543
+skinparam ActorFontColor #17332B
+skinparam classBackgroundColor #F0F8F3
+skinparam classBorderColor #48816E
+skinparam objectBackgroundColor #F0F8F3
+skinparam objectBorderColor #48816E
+skinparam participantBackgroundColor #E9F5EE
+skinparam participantBorderColor #48816E
+skinparam usecaseBackgroundColor #E9F5EE
+skinparam usecaseBorderColor #48816E
+skinparam packageBackgroundColor #F0F8F3
+skinparam packageBorderColor #48816E
+skinparam noteBackgroundColor #F7FAF5
+skinparam noteBorderColor #48816E
+hide stereotype

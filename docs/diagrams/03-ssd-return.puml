@@ -1,0 +1,18 @@
+@startuml
+!include style.puml
+hide footbox
+actor Cashier as C
+participant ":Market POS" as P
+C -> P : makeNewReturn(saleNumber)
+P --> C : original lines and returnable quantities
+loop for each returned product
+ C -> P : enterReturnItem(productCode, quantity)
+ P --> C : selected quantities and refund quote
+end
+C -> P : refundCash(quotedAmount)
+alt refund confirmed and saved
+ P --> C : cash amount and return voucher
+else quantity conflict, changed quote or database failure
+ P --> C : error and recovery instruction
+end
+@enduml

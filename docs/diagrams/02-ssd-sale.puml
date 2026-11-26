@@ -1,0 +1,20 @@
+@startuml
+!include style.puml
+hide footbox
+actor Cashier as C
+participant ":Market POS" as P
+C -> P : makeNewSale()
+P --> C : empty basket
+loop for each product entry
+ C -> P : enterItem(productCode, quantity)
+ P --> C : line details and running total
+end
+C -> P : endSale()
+P --> C : total including tax
+C -> P : makePayment(cashTendered)
+alt payment accepted and saved
+ P --> C : change due and sale receipt
+else invalid cash, stock conflict or database failure
+ P --> C : error and recovery instruction
+end
+@enduml

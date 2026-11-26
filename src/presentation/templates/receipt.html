@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Sale receipt' if kind == 'sale' else 'Return voucher' }}{% endblock %}
+{% block scripts %}<script defer src="{{ url_for('static', filename='pos.js') }}"></script>{% endblock %}
+{% block body %}
+{% set sale = kind == 'sale' %}
+<header class="page-head receipt-head"><div><h1>{{ 'Sale receipt' if sale else 'Return voucher' }}</h1><p>{{ 'Payment recorded.' if sale else 'Cash refund recorded.' }}</p></div><button class="secondary" type="button" data-print-receipt>Print</button></header>
+<section class="card receipt">
+  <div class="card-title"><div><h2>Market POS</h2><p>{{ 'Sale' if sale else 'Return' }} #{{ header.id }} · {{ header.created }} UTC</p>{% if not sale %}<p><a href="{{ url_for('receipt', kind='sale', number=header.sale_id) }}">Original sale #{{ header.sale_id }}</a></p>{% endif %}</div><span class="pill">{{ 'Paid in cash' if sale else 'Cash refunded' }}</span></div>
+  <div class="overflow"><table><thead><tr><th>Product</th><th>Qty</th><th>Unit price</th><th>Subtotal</th><th>Tax</th></tr></thead><tbody>
+  {% for line in lines %}<tr><td><strong>{{ line.name }}</strong><small>{{ line.sku }}</small></td><td>{{ line.qty }}</td><td>{{ line.price_cents|money }}</td><td>{{ line.subtotal|money }}</td><td>{{ line.tax|money }}</td></tr>{% endfor %}
+  </tbody></table></div>
+  <dl><div><dt>Subtotal</dt><dd>{{ header.subtotal|money }}</dd></div><div><dt>Tax</dt><dd>{{ header.tax|money }}</dd></div><div class="total"><dt>{{ 'Sale total' if sale else 'Cash refund' }}</dt><dd>{{ header.total|money }}</dd></div>
+  {% if sale %}<div><dt>Cash tendered</dt><dd>{{ header.tender|money }}</dd></div><div><dt>Change due</dt><dd>{{ header.change_due|money }}</dd></div>{% endif %}</dl>
+</section>
+<div class="receipt-actions"><a class="button" href="{{ url_for('checkout' if sale else 'returns') }}">{{ 'Back to checkout' if sale else 'Back to returns' }}</a><a href="{{ url_for('history') }}">Transaction history</a></div>
+{% endblock %}

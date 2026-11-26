@@ -1,0 +1,11 @@
+@startuml
+!include style.puml
+!pragma layout smetana
+object "checkout()" as UI
+object ":Register" as R
+object "sale:Sale" as S
+object "repo:SQLiteSession" as DB
+UI -right-> R : 1: make_payment(sale, tender)
+R -right-> S : 1.2 [new commit]: accept_cash(tender)
+R -down-> DB : 1.1: find_sale_token(sale.id)\n1.3 [new commit]: persist_sale(sale, payment)
+@enduml

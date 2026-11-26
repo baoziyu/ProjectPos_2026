@@ -1,0 +1,59 @@
+@startuml
+!include style.puml
+!pragma layout smetana
+hide empty members
+hide circle
+class Store
+class Register
+class "Product Catalog" as Catalog
+class "Product Description" as Description {
+  product code
+  description
+  current price
+}
+class "Stock Record" as Stock {
+  on-hand quantity
+}
+class Sale {
+  sale number
+  date and time
+}
+class "Sales Line Item" as SaleLine {
+  quantity
+  unit price at sale
+  line tax
+}
+class "Cash Payment" as Payment {
+  amount tendered
+  change due
+}
+class "Return" as Ret {
+  return number
+  date and time
+  cash refund
+}
+class "Return Line Item" as RetLine {
+  quantity
+  refund tax
+}
+class Receipt {
+  reference
+}
+Store "1" -right- "1" Register : operates
+Store "1" -down- "1" Catalog : maintains
+Catalog "1" -down- "0..*" Description : lists
+Description "1" -down- "1" Stock : counted by
+Register "1" -down- "0..*" Sale : records
+Sale "1" *-down- "1..*" SaleLine : contains
+Description "1" -right- "0..*" SaleLine : describes
+Sale "1" -right- "1" Payment : settled by
+Sale "1" -down- "0..*" Ret : source for
+Ret "1" *-down- "1..*" RetLine : contains
+SaleLine "1" -down- "0..*" RetLine : source for
+Sale "0..1" -down- "1" Receipt : documents
+Ret "0..1" -right- "1" Receipt : documents
+note bottom of Receipt
+  Exactly one transaction
+  per receipt or voucher.
+end note
+@enduml

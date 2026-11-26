@@ -1,0 +1,37 @@
+@startuml
+!include style.puml
+hide footbox
+participant "returns()" as UI
+participant ":Register" as R
+participant "repo:SQLiteSession" as DB
+participant "draft:Return" as T
+UI -> R : make_new_return(sale_id)
+R -> DB : sale_items(sale_id)
+DB --> R : original lines
+create T
+R -> T : Return(sale_id)
+R --> UI : draft
+loop each return entry
+ UI -> R : enter_return_item(draft, sku, qty)
+ R -> R : return_context(draft)
+ R -> DB : sale_items(sale_id)
+ R -> DB : returned_quantities(sale_id)
+ R -> T : add_item(source, qty, returned)
+ T --> R : return line
+ R --> UI : return line
+end
+UI -> R : refund_cash(draft, expected)
+group write session
+ R -> DB : find_return_token(draft.id)
+ DB --> R : existing ID or None
+ opt no prior commit
+  R -> DB : sale_items(sale_id)
+  R -> DB : returned_quantities(sale_id)
+  R -> T : quote(source, returned)
+  T --> R : refund lines
+  R -> DB : persist_return(draft, lines)
+  DB --> R : return ID
+ end
+end
+R --> UI : return ID
+@enduml

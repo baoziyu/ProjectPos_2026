@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Register{% endblock %} | Market POS</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='pos.css') }}">
+  {% block scripts %}{% endblock %}
+</head>
+<body>
+  <aside class="sidebar">
+    <a href="{{ url_for('checkout') }}" class="brand"><span class="brand-mark" aria-hidden="true"></span>Market POS</a>
+    <nav aria-label="Register">
+      {% for endpoint, label, icon in [('checkout','Checkout','▤'),('returns','Returns','↶'),('products','Products','▦'),('history','History','◷')] %}
+      {% if request.endpoint == endpoint %}{% set active = true %}{% else %}{% set active = false %}{% endif %}
+      <a href="{{ url_for(endpoint) }}"{% if active %} aria-current="page"{% endif %}><span aria-hidden="true">{{ icon }}</span>{{ label }}</a>
+      {% endfor %}
+    </nav>
+    <div class="sidebar-foot"><span></span>Local register</div>
+  </aside>
+  <main>
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+    <div class="notice {{ category }}" role="{{ 'alert' if category == 'error' else 'status' }}">{{ message }}</div>
+    {% endfor %}
+    {% block body %}{% endblock %}
+  </main>
+</body>
+</html>

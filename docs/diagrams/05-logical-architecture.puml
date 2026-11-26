@@ -1,0 +1,24 @@
+@startuml
+!include style.puml
+!pragma layout smetana
+package "Presentation" as P {
+  package "Flask routes" as Routes
+  package "Jinja views" as Views
+}
+package "Application" as A {
+  package "Register controller" as Register
+}
+package "Domain" as D {
+  package "Sale, payment and return rules" as Model
+}
+package "Infrastructure" as I {
+  package "SQLite store and session" as Repository
+}
+P ..> A : delegates operations
+P ..> D : draft and view data
+P ..> I : composition at startup
+Routes ..> Views : renders
+A ..> D : coordinates
+A ..> I : opens transaction
+I ..> D : maps data and domain objects
+@enduml

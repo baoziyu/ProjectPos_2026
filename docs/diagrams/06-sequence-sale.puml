@@ -1,0 +1,35 @@
+@startuml
+!include style.puml
+hide footbox
+participant "checkout()" as UI
+participant ":Register" as R
+participant "repo:SQLiteSession" as DB
+participant "sale:Sale" as S
+UI -> R : make_new_sale()
+create S
+R -> S : Sale()
+R --> UI : sale
+loop each item entry
+ UI -> R : enter_item(sale, sku, qty)
+ R -> DB : get_product(sku)
+ DB --> R : product
+ R -> S : add_item(product, qty)
+ S --> R : line
+ R --> UI : line
+end
+UI -> R : end_sale(sale)
+R -> S : end()
+R --> UI : total
+UI -> R : make_payment(sale, tender)
+group write session
+ R -> DB : find_sale_token(sale.id)
+ DB --> R : existing ID or None
+ opt no prior commit
+  R -> S : accept_cash(tender)
+  S --> R : payment
+  R -> DB : persist_sale(sale, payment)
+  DB --> R : sale ID
+ end
+end
+R --> UI : sale ID
+@enduml

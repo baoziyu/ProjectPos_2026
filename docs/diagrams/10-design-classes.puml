@@ -1,0 +1,75 @@
+@startuml
+!include style.puml
+!pragma layout smetana
+hide circle
+skinparam classAttributeIconSize 0
+class Register {
+  +make_new_sale(): Sale
+  +enter_item(sale, sku, qty): SalesLineItem
+  +end_sale(sale): int
+  +make_payment(sale, tender): int
+  +make_new_return(sale_id): Return
+  +return_context(draft): tuple
+  +enter_return_item(draft, sku, qty): ReturnLineItem
+  +refund_cash(draft, expected): int
+}
+class SQLiteStore {
+  +session(write): context manager
+}
+class SQLiteSession {
+  +get_product(sku): Product
+  +find_sale_token(token): int or None
+  +persist_sale(sale, payment): int
+  +sale_items(sale_id): mapping
+  +returned_quantities(sale_id): mapping
+  +find_return_token(token): int or None
+  +persist_return(draft, lines): int
+}
+class Sale {
+  +id: str
+  +ended: bool
+  +add_item(product, qty): SalesLineItem
+  +end(): None
+  +accept_cash(tender): CashPayment
+  +total: int
+}
+class "Return" as Ret {
+  +sale_id: int
+  +id: str
+  +add_item(source, qty, returned): ReturnLineItem
+  +quote(source, returned): list
+}
+class Product {
+  +sku: str
+  +name: str
+  +price_cents: int
+  +stock: int
+}
+class SalesLineItem {
+  +sku: str
+  +qty: int
+  +subtotal: int
+  +tax: int
+}
+class ReturnLineItem {
+  +qty: int
+  +previously_returned: int
+  +subtotal: int
+  +tax: int
+}
+class CashPayment {
+  +tender: int
+  +total: int
+  +change: int
+}
+Register --> SQLiteStore : store
+SQLiteStore ..> SQLiteSession : creates
+Register ..> SQLiteSession : local
+Register ..> Sale : creates / calls
+Register ..> Ret : creates / calls
+Sale *-- "0..*" SalesLineItem : lines
+Sale ..> CashPayment : creates
+Sale ..> Product : parameter
+Ret ..> ReturnLineItem : creates
+ReturnLineItem --> SalesLineItem : source
+@enduml

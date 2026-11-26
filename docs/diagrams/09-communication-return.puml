@@ -1,0 +1,11 @@
+@startuml
+!include style.puml
+!pragma layout smetana
+object "returns()" as UI
+object ":Register" as R
+object "draft:Return" as T
+object "repo:SQLiteSession" as DB
+UI -right-> R : 1: refund_cash(draft, expected)
+R -right-> T : 1.4 [new commit]: quote(source, returned)
+R -down-> DB : 1.1: find_return_token(draft.id)\n1.2 [new commit]: sale_items(sale_id)\n1.3 [new commit]: returned_quantities(sale_id)\n1.5 [valid quote]: persist_return(draft, lines)
+@enduml
