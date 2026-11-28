@@ -62,27 +62,4 @@ Tests create isolated SQLite databases. See the [testing report](docs/reports/Te
 
 The technical report, quizzes and slide deck are separate course submission files.
 
-## Git and GitHub workflow
 
-The course repository is named **ProjectPos_2026**. Each member clones the team's repository, sets their own Git identity and uses a unique branch. Replace **member-id** with the branch name assigned by the team.
-
-```bash
-git switch main
-git pull --ff-only
-git switch -c member-id
-# Make and test the assigned changes before staging them.
-git add -p
-git commit -m "Describe the actual work"
-git push -u origin member-id
-```
-
-Open a pull request into `main` and attach test evidence. The maintainer reviews and merges it. Preserve all contributor branches and disable automatic head branch deletion in repository settings. Record each member’s actual commands during the work and capture the repository graph after integration:
-
-```bash
-git fetch --all
-git log --all --graph --decorate --oneline
-git branch -a
-git remote -v
-```
-
-Before submission, fill the personal details and submission date in the report and quizzes. Add the verified GitHub and Bilibili links and real collaboration evidence to the editable report, then export the updated PDF. A submission rehearsal is described in the demo script.
